@@ -11,13 +11,23 @@ final class ResultsViewController: UITableViewController {
     
     //MARK: - Prrivate properties
     private let careTaker = GameCareTaker()
-    private var results = [GameResult]()
+    private var results = [GameSession]()
     
     //MARK: - Life cycle
+
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        let results = careTaker.loadGame()
+        self.results = results.reversed()
+    }
+    @available (*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         registerCell()
-        loadResults()
     }
     
     //MARK: - Table data sourse
@@ -41,11 +51,6 @@ final class ResultsViewController: UITableViewController {
     //MARK: - Private mathods
     private func registerCell() {
         tableView.register(ResultTableViewCell.self, forCellReuseIdentifier: ResultTableViewCell.reuseId)
-    }
-    
-    private func loadResults() {
-        guard let result = try? careTaker.loadGame() else {return}
-        self.results = result.reversed()
     }
     
 }

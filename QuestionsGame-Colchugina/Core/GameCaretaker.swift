@@ -8,29 +8,24 @@
 import Foundation
 
 final class GameCareTaker {
-    
-    //MARK: - Public properties
-    public enum Error: Swift.Error {
-        case gameNotFound
-    }
-    
+
+    typealias Memento = Data
+
     //MARK: - Private properties
     private let decoder = JSONDecoder()
     private let encoder = JSONEncoder()
     private let key = "game"
     
     //MARK: - Public methods
-    func saveGame(_ result: [GameResult]) {
-        guard let data: Data = try? encoder.encode(result) else {return}
+    func saveGame(_ result: [GameSession]) {
+        guard let data: Memento = try? encoder.encode(result) else {return}
         UserDefaults.standard.set(data, forKey: key)
     }
     
-    func loadGame() throws -> [GameResult] {
+    func loadGame() -> [GameSession] {
         guard let data = UserDefaults.standard.value(forKey: key) as? Data,
-              let result = try? decoder.decode([GameResult].self, from: data)
-        else {
-            throw Error.gameNotFound
-        }
+              let result = try? decoder.decode([GameSession].self, from: data)
+        else { return [] }
         return result
     }
     

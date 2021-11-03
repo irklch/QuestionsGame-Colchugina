@@ -8,5 +8,5 @@
 import Foundation
 
 protocol GameDelegate: AnyObject {
-    func gameDidEnd(questionsCount: Int, rightAnswersCount: Int)
+    func gameDidEnd(session: GameSession)
 }

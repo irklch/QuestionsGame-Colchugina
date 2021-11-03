@@ -13,8 +13,9 @@ final class StartViewController: UIViewController {
     private let logoLabel = UILabel()
     private let playButton = UIButton()
     private let resultsButton = UIButton()
+    private let settingsButton = UIButton()
 
-//MARK: - Life cycle
+    //MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
@@ -35,23 +36,18 @@ final class StartViewController: UIViewController {
             playButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
             playButton.heightAnchor.constraint(equalToConstant: 70)
         ])
-        playButton.backgroundColor = .systemYellow
+
+        var playConfig = UIButton.Configuration.filled()
+        playConfig.baseBackgroundColor = .systemYellow
+        playConfig.baseForegroundColor = .darkGray
+        var playContainer = AttributeContainer()
+        playContainer.font = UIFont(name: "Avenir-Medium", size: 26)
+        playConfig.attributedTitle = AttributedString("Играть", attributes: playContainer)
+        playConfig.titleAlignment = .center
+
+        playButton.configuration = playConfig
+
         playButton.layer.cornerRadius = 15
-        playButton.setTitle("Играть", for: .normal)
-        playButton.setTitleColor(.darkGray, for: .normal)
-        playButton.titleLabel?.font = UIFont(name: "Avenir-Medium", size: 26)
-        playButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 26)
-        playButton.setBackgroundColor(color: UIColor(red: 246/255,
-                                                     green: 225/255,
-                                                     blue: 117/255,
-                                                     alpha: 1),
-                                      forState: .highlighted)
-        playButton.layer.shadowColor = UIColor.black.cgColor
-        playButton.layer.shadowOffset = CGSize(width: 0, height: 3)
-        playButton.layer.shadowRadius = 4
-        playButton.layer.shadowOpacity = 0.1
-        playButton.layer.shadowPath = UIBezierPath(rect: playButton.bounds).cgPath
-        playButton.clipsToBounds = false
         playButton.addTarget(self, action: #selector(playGame), for: .touchUpInside)
 
         view.addSubview(logoLabel)
@@ -69,31 +65,48 @@ final class StartViewController: UIViewController {
         NSLayoutConstraint.activate([
             resultsButton.topAnchor.constraint(equalTo: playButton.bottomAnchor, constant: 20),
             resultsButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
-            resultsButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
+            resultsButton.widthAnchor.constraint(equalToConstant: 250),
             resultsButton.heightAnchor.constraint(equalToConstant: 70)
         ])
-        resultsButton.backgroundColor = .systemYellow
+
+        var resultConfig = UIButton.Configuration.filled()
+        resultConfig.baseBackgroundColor = .systemYellow
+        resultConfig.baseForegroundColor = .darkGray
+        var resultContainer = AttributeContainer()
+        resultContainer.font = UIFont(name: "Avenir-Light", size: 20)
+        resultConfig.attributedTitle = AttributedString("Результаты", attributes: resultContainer)
+        resultConfig.titleAlignment = .center
+
+        resultsButton.configuration = resultConfig
+
         resultsButton.layer.cornerRadius = 15
-        resultsButton.setTitle("Результаты", for: .normal)
-        resultsButton.setTitleColor(.darkGray, for: .normal)
-        resultsButton.setBackgroundColor(color: UIColor(red: 246/255,
-                                                        green: 225/255,
-                                                        blue: 117/255,
-                                                        alpha: 1),
-                                         forState: .highlighted)
-        resultsButton.titleLabel?.font = UIFont(name: "Avenir-Light", size: 20)
         resultsButton.addTarget(self, action: #selector(presentResults), for: .touchUpInside)
-        resultsButton.layer.shadowColor = UIColor.black.cgColor
-        resultsButton.layer.shadowOffset = CGSize(width: 0, height: 3)
-        resultsButton.layer.shadowRadius = 4
-        resultsButton.layer.shadowOpacity = 0.1
-        resultsButton.layer.shadowPath = UIBezierPath(rect: resultsButton.bounds).cgPath
-        resultsButton.clipsToBounds = false
+
+        view.addSubview(settingsButton)
+        settingsButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            settingsButton.topAnchor.constraint(equalTo: playButton.bottomAnchor, constant: 20),
+            settingsButton.leadingAnchor.constraint(equalTo: resultsButton.trailingAnchor, constant: 10),
+            settingsButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
+            settingsButton.heightAnchor.constraint(equalToConstant: 70)
+        ])
+
+        var config = UIButton.Configuration.filled()
+        config.image = UIImage(systemName: "gearshape")
+        config.baseForegroundColor = .darkGray
+        config.baseBackgroundColor = .systemYellow
+        config.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 25)
+
+        settingsButton.configuration = config
+        
+        settingsButton.layer.cornerRadius = 15
+        settingsButton.addTarget(self, action: #selector(presentSettings), for: .touchUpInside)
     }
 
     @objc
     private func playGame() {
         let vc = GameViewController()
+        vc.gameDelegate = self
         present(vc, animated: true, completion: nil)
     }
 
@@ -103,5 +116,19 @@ final class StartViewController: UIViewController {
         present(vc, animated: true, completion: nil)
     }
 
+    @objc
+    private func presentSettings() {
+        let vc = SettingsViewController()
+        vc.sheetPresentationController?.detents = [.medium(), .large()]
+        present(vc, animated: true, completion: nil)
+    }
+
+}
+
+//MARK: - Extension
+extension StartViewController: GameDelegate {
+    func gameDidEnd(session: GameSession) {
+        Game.shared.addSession(session)
+    }
 }
 

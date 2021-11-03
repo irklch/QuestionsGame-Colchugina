@@ -29,8 +29,17 @@ final class ResultTableViewCell: UITableViewCell {
     }
     
     //MARK: - Public properties
-    func config (result: GameResult) {
-        percentLabel.text = String(format: "%.1f", result.percentAnswers) + "%"
+    func config (result: GameSession) {
+        let percent = Double(result.rightAnswersCount) / Double(result.questionsCount) * 100
+        if percent > 66 {
+            percentLabel.backgroundColor = UIColor(red: 97/255, green: 199/255, blue: 115/255, alpha: 1)
+        } else if percent < 33 {
+            percentLabel.backgroundColor = UIColor(red: 234/255, green: 233/255, blue: 237/255, alpha: 1)
+            percentLabel.textColor = .darkGray
+        } else {
+            percentLabel.backgroundColor = .systemYellow
+        }
+        percentLabel.text = String(format: "%.1f", percent) + "%"
         dateLabel.text = "Дата: \(result.date)"
         questions.text = "Вопросы: \(result.rightAnswersCount) / \(result.questionsCount)"
     }
